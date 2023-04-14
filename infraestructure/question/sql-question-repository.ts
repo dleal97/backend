@@ -30,7 +30,7 @@ export class SqlQuestionRepository implements QuestionRepository {
                 });
             } else {
                 finalquestions[question['id']] = {
-                    text: question.question,
+                    text: this.urldecode(question.question),
                     answers: [{ text: question.text, value: question.value }],
                 };
             }
@@ -42,10 +42,47 @@ export class SqlQuestionRepository implements QuestionRepository {
                     parseInt(key),
                     value['text'],
                     value['answers'].map((answer) => ({
-                        text: answer['text'],
+                        text: this.urldecode(answer['text']),
                         correct: answer['value'],
                     }))
                 )
         );
+    }
+
+    private urldecode(encodedString: string): string {
+        return this.cleanHtmlString(
+            decodeURIComponent(encodedString.replace(/\+/g, ' '))
+        );
+    }
+
+    private cleanHtmlString(htmlString: string): string {
+        // Eliminar etiquetas HTML
+        const strippedHtml = htmlString.replace(/(<([^>]+)>)/gi, '');
+
+        // Eliminar caracteres de escape HTML
+        const unescapedString = strippedHtml.replace(
+            /&([^;]+);/gi,
+            (match, entity) => {
+                const entityMap = {
+                    amp: '&',
+                    lt: '<',
+                    gt: '>',
+                    quot: '"',
+                    '#039': "'",
+                    nbsp: ' ',
+                } as any;
+
+                if (entity in entityMap) {
+                    return entityMap[entity];
+                }
+
+                return match;
+            }
+        );
+
+        // Eliminar caracteres de escape de secuencia de escape
+        const finalString = unescapedString.replace(/\\/gi, '');
+
+        return finalString;
     }
 }
