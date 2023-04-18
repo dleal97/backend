@@ -14,7 +14,8 @@ export class SqlQuestionRepository implements QuestionRepository {
         });
 
         const [results] = await connection.execute<mysql.RowDataPacket[]>(
-            "SELECT ramdomquestion.id, ramdomquestion.question, a.text, REPLACE(REPLACE(a.fraction, '-33.3333', 'false') , '100', 'true') AS value  FROM Answer a INNER JOIN (SELECT m.id, m.question  FROM Multichoice m ORDER BY RAND() LIMIT 15) AS ramdomquestion ON a.idQuestion = ramdomquestion.id"
+            //"SELECT ramdomquestion.id, ramdomquestion.question, a.text, REPLACE(REPLACE(a.fraction, '-33.3333', 'false') , '100', 'true') AS value  FROM Answer a INNER JOIN (SELECT m.id, m.question  FROM Multichoice m ORDER BY RAND() LIMIT 15) AS ramdomquestion ON a.idQuestion = ramdomquestion.id"
+            "SELECT ramdomquestion.id, ramdomquestion.question, a.text, IF(REPLACE(REPLACE(a.fraction, '-33.3333', '0'), '100', '1') = '1', TRUE, FALSE) AS value FROM Answer a INNER JOIN (SELECT m.id, m.question FROM Multichoice m ORDER BY RAND() LIMIT 15) AS ramdomquestion ON a.idQuestion = ramdomquestion.id"
         );
 
         const finalquestions: Record<
