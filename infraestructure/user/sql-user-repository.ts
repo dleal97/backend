@@ -42,7 +42,13 @@ export class SqlUserRepository implements UserRepository {
 
             await connection.query(
                 `INSERT INTO UCOquizPlayers (username, password, score) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE password=?, score=?`,
-                [user.username, user.password, user.score, user.password, user.score]
+                [
+                    user.username,
+                    user.password,
+                    user.score,
+                    user.password,
+                    user.score,
+                ]
             );
         } catch (err) {
             console.error('Error saving user:', err);
