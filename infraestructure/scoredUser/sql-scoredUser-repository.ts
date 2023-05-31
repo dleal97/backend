@@ -28,7 +28,27 @@ export class SqlScoredUserRepository implements ScoredUserRepository {
         const finalUsers: ScoredUser[] = results.map((user) => {
             return new ScoredUser(user.username, user.score);
         });
-    
+
         return finalUsers;
+    }
+
+    public async getUserPosition(username: string): Promise<number> {
+        const connection = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PWD,
+            database: process.env.DB_NAME,
+        });
+
+        const [results] = await connection.execute<mysql.RowDataPacket[]>(
+            `SELECT position FROM (SELECT username, score, ROW_NUMBER() OVER (ORDER BY score DESC) AS position FROM dbs7575347.UCOquizPlayers) AS ranked_table WHERE username = '${username}'`
+        );
+
+        if (results.length === 0) {
+            return 0;
+        }
+        const position = results[0].position as number;
+
+        return position;
     }
 }

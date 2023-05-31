@@ -6,6 +6,7 @@ export class EndGame {
     public async execute(username: string, newScore: number): Promise<void> {
         // Obtener de la base de datos la informacion del usuario.
         const user = await this.userRepository.findByUsername(username);
+       
 
         // Compruebo que exista el usuario
         if (!user) {

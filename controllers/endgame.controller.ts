@@ -10,6 +10,7 @@ router.put('/end-game', async (req: Request, res: Response) => {
 
     const useCase = new EndGame(new SqlUserRepository());
     await useCase.execute(body.username, body.newScore);
+    // console.log(body.username);
 
     res.send();
 });
